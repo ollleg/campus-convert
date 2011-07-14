@@ -8,6 +8,7 @@ import java.sql.Statement;
 public class MsSqlIntegrator implements SqlIntegrator {
 	private String hostName;
 	private String dbName;
+	private Connection con;
 
 	public MsSqlIntegrator(String serverHostName, String databaseName) {
 		super();
@@ -22,24 +23,14 @@ public class MsSqlIntegrator implements SqlIntegrator {
 
 	@Override
 	public ResultSet executeStatement(String stmt) throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://"+hostName+";database="+dbName+";integratedSecurity=true;";
-		Connection con = DriverManager.getConnection(connectionUrl);
-		ResultSet rs;
 		Statement statement = con.createStatement();
-        rs = statement.executeQuery(stmt);
-        con.close();
-		return rs;
+		return statement.executeQuery(stmt);
 	}
 
 	@Override
 	public int executeUpdate(String stmt) throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://"+hostName+";database="+dbName+";integratedSecurity=true;";
-		Connection con = DriverManager.getConnection(connectionUrl);
-		int res;
 		Statement statement = con.createStatement();
-        res = statement.executeUpdate(stmt);
-        con.close();
-		return res;
+		return statement.executeUpdate(stmt);
 	}
 
 
@@ -57,5 +48,28 @@ public class MsSqlIntegrator implements SqlIntegrator {
 
 	public void setDbName(String dbName) {
 		this.dbName = dbName;
+	}
+
+	@Override
+	public boolean openConnection() {
+		String connectionUrl = "jdbc:sqlserver://"+hostName+";database="+dbName+";integratedSecurity=true;";
+		try {
+			con = DriverManager.getConnection(connectionUrl);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean closeConnection() {
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }
