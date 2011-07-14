@@ -1,5 +1,8 @@
+package org.kpi.campus.convert;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 
 
 public interface SqlIntegrator {
